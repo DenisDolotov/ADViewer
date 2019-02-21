@@ -23,24 +23,29 @@ public class MainActivity extends AppCompatActivity {
         //Set window to fullscreen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //Preset test images
-
+        //Set screen always on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_main);
 
         // ImageView for displaying ADs
         final ImageView mImageView = findViewById(R.id.ADImageID);
 
-        // Check for SD Card
+        // Check for external storage
         if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             Toast.makeText(this, "No SD card found!", Toast.LENGTH_LONG)
                     .show();
         } else {
-            // Locate the image folder in your SD card
+            // Locate the image folder in your external storage
             file = new File(Environment.getExternalStorageDirectory()
                     + File.separator + "ADImages");
-            // Create a new folder if no folder named ADImages exist
-            // file.mkdirs();
+            file.mkdir();
+
+        }
+        //If folder not exist
+        if (!file.exists()) {
+            Toast.makeText(this, "ADImages folder is not found!", Toast.LENGTH_LONG)
+                    .show();
         }
 
         if (file.isDirectory()) {
@@ -52,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
                 FilePathStrings[i] = file.listFiles()[i].getAbsolutePath();
             }
         }
-//        Toast.makeText(this, file.getAbsolutePath(), Toast.LENGTH_LONG)
-//                .show();
 
         //Create the Thread for changing images
         if (FilePathStrings.length > 1) {
@@ -83,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }).start();
         } else {
+            //If there is only one image, then output it.
             Bitmap bmp = BitmapFactory.decodeFile(FilePathStrings[0]);
             mImageView.setImageBitmap(bmp);
         }
